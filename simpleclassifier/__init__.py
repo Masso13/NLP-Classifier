@@ -1,11 +1,9 @@
 from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 from string import punctuation
-
-stopwords = set(stopwords.words("portuguese") + list(punctuation))
+import json
 
 def processText(text:str):
-    """Process the text by removing punctuation and stopwords.
+    """Process the text by removing punctuation.
 
     Args:
         text (str): User input text.
@@ -56,3 +54,30 @@ class Classifier:
             for action in self.similaties:
                 probably = action
         return False if not probably else (probably, self.similaties[probably])
+
+class Trainer:
+    def __init__(self):
+        """Return the trainer class.
+        """
+        self.patterns = {}
+    
+    def add_pattern(self, action:str, pattern:str):
+        """Register the pattern in a key with the action name
+
+        Args:
+            action (str): The action is the entity responsible for the pattern.
+            pattern (str): The pattern to be used as a base.
+        """
+        pattern = list(processText(pattern))
+        if not action in self.patterns:
+            self.patterns[action] = []
+        self.patterns[action].append(pattern)
+    
+    def save_patterns(self, directory:str = "base.json"):
+        """Save the patterns in a json file.
+
+        Args:
+            directory (str, "base.json"): Directory to save.
+        """
+        with open(directory, "w", encoding="utf8") as f:
+            json.dump(self.patterns, f, ensure_ascii=False)
